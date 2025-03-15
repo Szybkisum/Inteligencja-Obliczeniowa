@@ -1,7 +1,6 @@
 import math
 import matplotlib.pyplot as plt
 import numpy as np
-import sys
 
 h = 100
 v_0 = 50
