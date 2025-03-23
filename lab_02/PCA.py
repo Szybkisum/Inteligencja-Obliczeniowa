@@ -12,7 +12,6 @@ print(pca.explained_variance_ratio_)
 
 pca_df = pca.transform(X)
 
-
 pca_df = pd.DataFrame(data=pca_df, columns=['PC1', 'PC2'])
 pca_df['variety'] = df[y]
 
