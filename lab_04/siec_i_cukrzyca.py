@@ -31,7 +31,7 @@ plt.close()
 
 # custom
 
-mlp = MLPClassifier(hidden_layer_sizes=(6,4), max_iter=500, random_state=295987, activation="relu")
+mlp = MLPClassifier(hidden_layer_sizes=(6,6), max_iter=500, random_state=295987, activation="relu")
 mlp.fit(train_data, train_classes)
 
 predictions= mlp.predict(test_data)
