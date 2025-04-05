@@ -17,7 +17,7 @@ scaler = StandardScaler()
 x_scaled = scaler.fit_transform(x)
 
 # b
-# Transformuje etykiety klas na wektory binarne
+# Transformuje etykiety klas na wektory binarne, gdzie jedyna wawrtość 1 jest pod indeksem równym oryginalnej wartości
 encoder = OneHotEncoder(sparse_output=False)
 y_encoded = encoder.fit_transform(y.reshape(-1, 1))
 
@@ -28,19 +28,27 @@ x_train, x_test, y_train, y_test = train_test_split(x_scaled, y_encoded, test_si
 # Warstwa wyjśćiowa posiada 3 neurony, wartość wynika z y_encoded.shape[1] = 3, co oznacza że dane wyjściowe mają 3 kolumny
 
 # d
-# Użycie funkcji selu utrzymuje Test Accuracy na 97.78% ale krzywa validation accuracy lepiej się łączy z krzywą train accuracy
+# Użycie funkcji selu utrzymuje Test Accuracy na 97.78% ale krzywa validation loss lepiej się łączy z krzywą train loss
 model = Sequential([
     Dense(64, activation="selu", input_shape=(x_train.shape[1],)),
     Dense(64, activation="selu"),
     Dense(y_encoded.shape[1], activation="softmax")
 ])
 
+# e
+# Parametr optimizer, to funkcja determinująca parametr uczenia się i to jak mocno będą zmieniać się wagi na przejściach pomiędzy neuronami. 
+# Parametr loss, czyli funkcja straty, dążymy do minimalizacji jej wyniku.
 model.compile(optimizer="sgd", loss="categorical_crossentropy", metrics=["accuracy"])
 
-history = model.fit(x_train, y_train, batch_size=16, epochs=100, validation_split=0.2, )
+# f
+# Zmiana wielkości batcha wpływa na to kiedy algorytm aktualizuje wagi. Wtedy zamiast brania pojedynczych wartości, brane są ich średnie w danym batchu.
+history = model.fit(x_train, y_train, batch_size=4, epochs=100, validation_split=0.2, )
 
 test_loss, test_accuracy = model.evaluate(x_test, y_test, verbose=0)
 print(f"Test Accuracy: {test_accuracy*100:.2f}%")
+
+# g
+# Powiedziałbym że mamy do czynienia z dobrze nauczonym modelem
 
 plt.figure(figsize=(12, 6))
 plt.subplot(1, 2, 1)
@@ -60,9 +68,12 @@ plt.ylabel('Loss')
 plt.xlabel('Epoch')
 plt.grid(True, linestyle='--', color='grey')
 plt.legend()
-plt.savefig("2.png")
+plt.savefig("iris_plot.png")
 
 plt.tight_layout()
 
 model.save('iris_model.keras')
 plot_model(model, to_file='model_plot.png', show_shapes=True, show_layer_names=True)
+
+# h
+# Program ładuje poprzednio trenowany model i trenuje go przez kolejnych 10 epok
