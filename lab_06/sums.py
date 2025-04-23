@@ -1,25 +1,27 @@
 import pygad
 import numpy as np
-import math
 
-def endurance(x, y, z, u, v, w):
-    return math.exp(-2*(y-math.sin(x))**2)+math.sin(z*u)+math.cos(v*w)
+S = [1, 2, 3, 6, 10, 17, 25, 29, 30, 41, 51, 60, 70, 79, 80]
 
-gene_space = {"low": 0, "high": 1}
+gene_space = [0, 1]
 
 def fitness_func(GA, solution, solutionidx):
-    return endurance(*solution)
+    sum1 = np.sum(solution * S)
+    solution_invert = 1 - solution
+    sum2 = np.sum(solution_invert * S)
+    fitness = -np.abs(sum1 - sum2)
+    return fitness
 
 sol_per_pop = 10
-num_genes = 6
+num_genes = len(S)
 
 num_parents_mating = 5
-num_generations = 50
-keep_parents = int(0.2 * sol_per_pop)
+num_generations = 30
+keep_parents = 2
 parent_selection_type = "sss"
 crossover_type = "single_point"
 mutation_type = "random"
-mutation_percent_genes = 20
+mutation_percent_genes = 8
 
 ga_instance = pygad.GA(
     gene_space=gene_space,
@@ -32,17 +34,15 @@ ga_instance = pygad.GA(
     parent_selection_type=parent_selection_type,
     crossover_type=crossover_type,
     mutation_type=mutation_type,
-    mutation_percent_genes=mutation_percent_genes,
+    mutation_percent_genes=mutation_percent_genes
 )
 
 ga_instance.run()
 solution, solution_fitness, solution_idx = ga_instance.best_solution()
 print("Parameters of the best solution : {solution}".format(solution=solution))
 print("Fitness value of the best solution = {solution_fitness}".format(solution_fitness=solution_fitness))
-prediction = endurance(*solution)
-print("Predicted output based on the best solution :{prediction}".format(prediction=prediction))
 
-ga_instance.plot_fitness(save_dir="endurance")
+prediction = np.sum(S*solution)
+print("Predicted output based on the best solution : {prediction}".format(prediction=prediction))
 
-# [0.73876029 0.69243813 0.99879597 0.99970066 0.34961564 0.00145614]
-# 2.8399310521444088
+ga_instance.plot_fitness(save_dir="sums")
